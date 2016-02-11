@@ -1,0 +1,17 @@
+table filter {
+    chain input {
+      drop
+    }
+    chain output {
+      drop
+    }
+}
+
+table nat {
+  chain postrouting {
+      drop
+  }
+  chain prerouting {
+    drop
+  }
+}

@@ -1,0 +1,9 @@
+table filter {
+  chain input {
+      ct state established,related accept
+      ct state invalid log prefix "INVALID input: " limit rate 3/second" drop
+  }
+  chain output {
+      ct state established,related accept
+      ct state invalid log prefix "INVALID output: " limit rate 3/second" drop
+  }

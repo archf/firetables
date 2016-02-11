@@ -1,0 +1,8 @@
+include "nft-vars"
+table filter {
+    chain input {
+    }
+    chain output {
+      tcp dport $tcp_ports_out tcp sports %ports_unprivv accept
+    }
+}

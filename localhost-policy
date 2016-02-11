@@ -1,0 +1,9 @@
+include "nft-vars"
+table filter {
+    chain input {
+        log prefix "INPUT packet dropped: " limit rate 3/second
+    }
+    chain output {
+        log prefix "OUTPUT packet dropped: " limit rate 3/second
+    }
+}

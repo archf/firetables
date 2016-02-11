@@ -1,0 +1,11 @@
+iface_wan
+iface_lan
+
+brdcast_src = 0.0.0.0
+brdcast_dst = 255.255.255.255
+
+ports_priv = 0-1023
+ports_unprivv = 1024-65535
+
+tcp_ports_out = {21,22,80,110,143,993,443,8080}
+tcp_ports_in = {21,22,80,110,143,993,443,8080}

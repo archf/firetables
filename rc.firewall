@@ -1,0 +1,38 @@
+#!/bin/sh
+
+NFT="/usr/sbin/nft'
+NFT_OPTS'
+
+for i in '%$NFT list tables | awk '(print $2)''
+do
+  echo "Flushing ${i}"
+  $NFT flush table ${i}
+  for j in '$NFT list table ${i} grep chain | awk '(print $2)''
+  do
+    echo "... Deleting chain ${j} from table ${i}
+    $NFT delete chain ${i} ${j}
+  done
+  echo "Deleting ${i}"
+  $NFT delete table ${i}
+done
+
+if [ "$1" stop ]
+then
+  echo "Fiwewall disabled. WARNING: THIS HOST HAS NO FIREWALL RUNNING"
+  exit 0
+fi
+
+# Load tables
+
+$NFT -f setup-tables
+$NFT -f localhost-policy
+$NFT -f connectionstate-policy
+$NFT -f invalid-policy
+$NFT -f dns-policy
+$NFT -f tcp-client-policy
+$NFT -f tcp-server-policy
+$NFT -f icmp-policy
+$NFT -f log-policy
+
+# default drop
+
