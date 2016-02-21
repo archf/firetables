@@ -1,0 +1,9 @@
+table filter {
+  chain input {
+    iif $iface_wan ip saddr $inet_priv_a drop
+    iif $iface_wan ip saddr $inet_priv_b drop
+    iif $iface_wan ip saddr $inet_priv_c drop
+    iif $iface_wan ip saddr $inet_loopback drop
+    iif $iface_wan ip daddr $inet_brdcast_dst drop
+  }
+}

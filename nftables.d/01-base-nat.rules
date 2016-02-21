@@ -1,0 +1,21 @@
+table ip nat {
+  chain prerouting {
+    type nat hook prerouting priority 0;
+
+    # dnat rules
+
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority 0;
+
+    # snat rules
+    oifname $dev_nat masquerade
+  }
+
+  chain output {
+    type nat hook output priority 0;
+
+    # dnat rules
+  }
+}

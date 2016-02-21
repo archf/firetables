@@ -1,0 +1,13 @@
+table nat {
+  chain prerouting {
+    iif <dev> dnat
+  }
+
+  chain postrouting {
+  }
+
+  chain output {
+    oif <dev> dnat <ip>
+  }
+
+}

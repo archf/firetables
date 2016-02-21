@@ -1,0 +1,13 @@
+table nat {
+  chain prerouting {
+  }
+
+  chain postrouting {
+      oifname masquerade
+  }
+
+  chain output {
+    accept
+  }
+
+}

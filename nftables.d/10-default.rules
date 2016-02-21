@@ -1,0 +1,24 @@
+table filter {
+  chain input {
+    icmp type { echo-reply,destination-unreachable,parameter-problem,source-quench,time-exceeded} accept
+    log prefix "INPUT packet dropped: " limit rate 3/second
+    counter drop
+  }
+  chain output {
+    icmp type { echo-request,parameter-problem,source-quench } accept
+
+    # from funtoo
+    ip6 nexthdr icmpv6 limit rate 10/second accept
+    log prefix "OUTPUT packet dropped: " limit rate 3/second
+    counter drop
+  }
+}
+
+table nat {
+  chain postrouting {
+    drop
+  }
+  chain prerouting {
+    drop
+  }
+}

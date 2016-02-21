@@ -1,9 +1,0 @@
-include "nft-var"
-table filter {
-    chain input {
-        icmp type { echo-reply,destination-unreachable,parameter-problem,source-quench,time-exceeded} accept
-    }
-    chain output {
-        icmp type { echo-request,parameter-problem,source-quench } accept
-    }
-}
