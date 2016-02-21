@@ -1,0 +1,151 @@
+table inet filter {
+
+  # public inet traffic (when daddr ! in RFC1918 or RFC4193 (ULA))
+
+  # traffic from ips you whitelisted
+  chain input_whitelist {
+
+     # todo: get rid of this rule
+     iifname lxcbr0 accept
+
+     # allow access to remote host
+     tcp dport { 443, 8080, 24800, $ports_ssh}
+     udp dport {24800, $ports_udp_in_whitelist}
+
+     # allow acces for mcast dns
+     udp dport $ports_mdns accept
+
+     # allow full icmp capabilities on whitelisted ips
+     ip protocol icmp limit rate 1000/second accept
+     ip6 nexthdr icmpv6 limit rate 1000/second accept
+
+  }
+
+  chain input {
+    type filter hook input priority 0;
+
+    # ct state
+    ct state established,related accept
+    ct state invalid log prefix "INVALID input: " limit rate 3/second drop
+
+    # accept lo traffic
+    iif lo accept
+
+    # check invalid
+    #iif $dev_public ip saddr $ip_priv drop
+    #iif $dev_public ip saddr $ip_loopback drop
+    #iif $dev_public ip daddr $ip_brdcast_dst drop
+
+    # ssh: prevent ssh brute force
+    ct state new tcp dport $ports_ssh limit rate 10/second accept
+
+    # allow dhcp renew
+    udp sport $ports_dhcp_client udp dport $ports_dhcp_server accept
+
+    # jump to whitelist chain if traffic is from whitelisted sources
+    ip saddr $ip_whitelist jump input_whitelist
+    ip6 saddr {$ip6_whitelist, $ip6_priv, $ip6_linklocal, $ip6_multicast} jump input_whitelist
+
+    #ip protocol icmp ip saddr $ip_whitelist accept
+
+    ################################################################
+    # from this point consider all traffic as from untrusted sources
+    ################################################################
+
+    # limit ingress icmp capabilities to prevent ping floods
+    ip protocol icmp icmp type echo-request limit rate 512/second accept
+    ip6 nexthdr icmpv6 limit rate 1000/second accept
+
+    # icmpv6 input
+    # echo-request, echo-reply, destination-unreachable, packet-too-big, time-exceeded, bad-header, unknown-header-type, router-solicitation, neighbour-solicitation, router-advertisement, neighbour-advertisement
+
+    # log / count / drop packets that made it so far
+    log prefix "INPUT packet dropped: " limit rate 3/second
+    counter drop
+
+  }
+
+  chain output {
+    # while optional, output chain is defined to avoid unawarely leaking packet
+    # on priviledged ports. this is even more recommended if you have windows
+    # machines in your lan
+    # all traffic to high port is accepted as most clients needs them
+
+    type filter hook output priority 0;
+
+    # ct state
+    ct state established,related accept
+    ct state invalid log prefix "INVALID output: " limit rate 3/second drop
+
+    # accept lo traffic
+    oif lo accept
+
+    # enable egress dns communication
+    udp dport {$ports_dns, $ports_dhcp_server} accept
+
+    # allow traffic to all high ports regardless of L4 protocol
+    tcp dport $ports_unpriv accept
+    udp dport $ports_unpriv accept
+
+    # traffic to defined low ports
+    udp dport $ports_priv_out accept
+    tcp dport $ports_priv_out accept
+
+    # unlimited egress icmp capabilities
+    ip protocol icmp accept
+    ip6 nexthdr icmpv6 accept
+
+    # allow multicast listener on link-local ips
+    ip6 saddr $ip6_linklocal
+    # fixme: (or remove) this rule seems not to work
+    ip6 nexthdr icmpv6 icmpv6 type 143 accept
+
+    # log / count / drop packets that made it so far
+    log prefix "OUTPUT packet dropped: " limit rate 3/second
+    counter drop
+  }
+
+  chain forward {
+    type filter hook forward priority 0;
+
+    # todo: validate all this stuff
+
+    # accept lo traffic
+    oif lo accept
+    iif lo accept
+
+    # todo: check if this is really required
+    # propagate traffic to switch
+    oifname lxcbr0 accept
+    iifname lxcbr0 accept
+
+    # enable egress dns and dhcp communication
+    udp dport {$ports_dns, $ports_dhcp_client} accept
+
+    # ssh: prevent ssh brute force
+    ct state new tcp dport $ports_ssh limit rate 10/second accept
+
+    # allow dhcp renew
+    udp sport $ports_dhcp_client udp dport $ports_dhcp_server accept
+
+   # limit icmp capabilities to prevent ping floods
+    ip6 nexthdr icmpv6 icmpv6 type { nd-neighbor-solicit, echo-request,\
+      nd-router-advert, nd-neighbor-advert }
+# { echo-request, echo-reply, \
+#      destination-unreachable, packet-too-big, time-exceeded, bad-header, \
+#       } accept
+#  }
+
+    # ip protocol icmp icmp type { echo-reply,destination-unreachable, \ parameter-problem,source-quench,time-exceeded } limit rate 512/second accept
+    ip protocol icmp icmp type echo-request limit rate 1000/second accept
+    ip6 nexthdr icmpv6 limit rate 1000/second accept
+
+    # icmpv6 forward
+    # echo-request, echo-reply, destination-unreachable, packet-too-big,
+    # time-exceeded, bad-header, unknown-header-type
+
+    # log / count / drop packets that made it so far
+    log prefix "Forward packet dropped: " limit rate 3/second
+    counter drop
+  }
+}

@@ -1,0 +1,11 @@
+[Unit]
+Description=Netfilter (nftables) Firewall Script
+
+[Service]
+Type=oneshot
+ExecStart=/etc/fw.d/fw.sh
+ExecStop=/etc/fw/fw.sh --flush
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

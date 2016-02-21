@@ -1,0 +1,16 @@
+[Unit]
+Description=nftables
+Documentation=man:nft(8) http://wiki.nftables.org
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+StandardInput=null
+ProtectSystem=full
+ProtectHome=true
+ExecStart=/usr/sbin/nft --includepath "/etc/nftables.d" -f /etc/nftables.conf
+ExecReload=/usr/sbin/nft --includepath "/etc/nftables.d" -f /etc/nftables.conf
+ExecStop=/usr/sbin/nft flush ruleset
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+table filter {
+  chain input {
+    tcp dport $tcp_ingress_ssh_ports ct state new limit 10/second accept
+  }
+  chain output {
+    }
+}

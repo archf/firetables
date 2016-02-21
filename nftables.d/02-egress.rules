@@ -1,0 +1,7 @@
+table inet filter {
+  chain input {
+  }
+  chain output {
+    inet tcp sports $ports_unpriv accept
+  }
+}
