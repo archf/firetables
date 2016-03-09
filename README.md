@@ -110,6 +110,21 @@ from where you cloned this repository
 * dnat construct
 * snat construct
 
+# Quick commands
+
+```bash
+sudo systemctl status nftables.service
+
+sudo nft list ruleset
+
+# install firewall on when file change
+ff ! -path '*.git*' | entr sudo -E -H ./install.sh
+
+# where
+$ alias ff
+ff='find . -type f'
+```
+
 # Pull Requests
 
 Submit your PR! Things are quite messy, Help me out!

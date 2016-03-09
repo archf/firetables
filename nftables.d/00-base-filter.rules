@@ -81,7 +81,7 @@ table inet filter {
     oif lo accept
 
     # enable egress dns communication
-    udp dport {$ports_dns, $ports_dhcp_server} accept
+    udp dport {$ports_dns, $ports_dhcp_server, $ports_dhcp_client} accept
 
     # allow traffic to all high ports regardless of L4 protocol
     tcp dport $ports_unpriv accept
@@ -95,10 +95,13 @@ table inet filter {
     ip protocol icmp accept
     ip6 nexthdr icmpv6 accept
 
-    # allow multicast listener on link-local ips
-    ip6 saddr $ip6_linklocal
     # fixme: (or remove) this rule seems not to work
     ip6 nexthdr icmpv6 icmpv6 type 143 accept
+
+    # allow multicast listener on link-local ips workaround
+    ip6 saddr $ip6_linklocal accept
+    ip6 saddr :: accept
+    ip6 daddr $ip6_multicast accept
 
     # log / count / drop packets that made it so far
     log prefix "OUTPUT packet dropped: " limit rate 3/second
