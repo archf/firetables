@@ -9,8 +9,8 @@ table inet filter {
      iifname lxcbr0 accept
 
      # allow access to remote host
-     tcp dport { 443, 8080, 24800, $ports_ssh}
-     udp dport {24800, $ports_udp_in_whitelist}
+     tcp dport { 443, 8000, 8080, 24800, $ports_ssh}
+     udp dport {24800, 60000, 60001, 60002, 60003, $ports_udp_in_whitelist}
 
      # allow acces for mcast dns
      udp dport $ports_mdns accept
@@ -82,6 +82,7 @@ table inet filter {
 
     # enable egress dns communication
     udp dport {$ports_dns, $ports_dhcp_server, $ports_dhcp_client} accept
+    tcp dport {$ports_dns, $ports_dhcp_server, $ports_dhcp_client} accept
 
     # allow traffic to all high ports regardless of L4 protocol
     tcp dport $ports_unpriv accept
