@@ -2,15 +2,18 @@
 
 # Description
 
-`firetables` is a lightweight deny everything dual stack firewall based on nftables.
+`firetables` is a lightweight deny everything dual stack firewall based on
+nftables.
 
 # Project Status
 
-This project is still at an early stage! But it works. Currently, all used
-features are thoses working with `nftables 0.4` as this is the version
-currently packaged on OpenWrt. This could be reconsidered if someone recompiles
-the `nftables` on OpenWrt. `nftables 0.5` will be out on Fedora 24 or Ubuntu
-16.04 unless you recompile them for the OpenWrt project.
+This project is still at an early stage! But it should work. Currently, all
+used features are thoses working with `nftables 0.4` as this is the latest
+version currently packaged on OpenWrt. `nftables 0.5` will be out on Fedora 24
+or Ubuntu 16.04.
+
+I got inspired from the [combust](https://github.com/gavinhungry/combust)
+project:
 
 # Design goals
 
@@ -18,7 +21,7 @@ Some of these are not yet reached but:
 
 * Use as much nftables built-in scripting features as possible to allow for atomic operations
 * Be portable, it needs to work on any Debian or RedHat derivatives as well as on Openwrt.
-* It should have sensible defaults (i.e work as is on you laptop//destkop to protect you on a hostile network)
+* It should have sensible defaults (i.e work as is on you laptop//destkop to protect you on a hostile wifi network)
 * It should handle multiple nic-card machine setups as well as single nic setup
 * It should be modular
 * Favor simplicity and ease of use and configuration over paranoiac setups
@@ -26,16 +29,13 @@ Some of these are not yet reached but:
 
 # Architecture
 
-`nftables.conf` is invoked and loads nftables firewall tables
-according to include directives. This way you can pick the exact bulding blocks
-you need and/or renumber the nftables rules to suit your needs and increase
-performance.
+`nftables.conf` is invoked and loads nftables firewall tables according to
+include directives. This way you can pick the exact bulding blocks you need
+and/or renumber the nftables rules to suit your needs and increase performance.
 
 Each loaded blocks make use of built-in nftables constructs that can be
 enriched with detected OS network configuration and variables declared in
-`firetables.conf`
-
-On the long term, I we would only need to edit the `nftables.conf` file.
+`nftables.conf`
 
 ## Project structure
 
@@ -51,7 +51,7 @@ nftables.service`: systemd unit file to start and enable the firewall as a servi
 2. `nftables.conf` is edited by a script (invoked by hook) and configured according to network environnement.
 3. Load building block in numerical order
 
-fixthis:
+fixt this:
     00-nft-default-policy
       * these are non interface specific rules
       * all loopback traffic is allowed
@@ -118,11 +118,7 @@ sudo systemctl status nftables.service
 sudo nft list ruleset
 
 # install firewall on when file change
-ff ! -path '*.git*' | entr sudo -E -H ./install.sh
-
-# where
-$ alias ff
-ff='find . -type f'
+find . -type f ! -path '*.git*' | entr sudo -E -H ./install.sh
 ```
 
 # Pull Requests
