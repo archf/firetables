@@ -51,25 +51,24 @@ nftables.service`: systemd unit file to start and enable the firewall as a servi
 2. `nftables.conf` is edited by a script (invoked by hook) and configured according to network environnement.
 3. Load building block in numerical order
 
-fix this:
-  00-nft-default-policy
-    * these are non interface specific rules
-    * all loopback traffic is allowed
-    * allow traffic based on connection tracking
-    * egress tracking to basic services is allowed based on dport. This is configured in `firewall.conf`
-      * dns
-      * ntp
-      * smtp
-      * http
-      * https
-      * ...
-  01-nft-invalid-rules
-  05-create-per-nic-chains
-    * create an empty chain for each detected nic
+00-nft-default-policy
+* these are non interface specific rules
+* all loopback traffic is allowed
+* allow traffic based on connection tracking
+* egress tracking to basic services is allowed based on dport. This is configured in `firewall.conf`
+  * dns
+  * ntp
+  * smtp
+  * http
+  * https
+  * ...
+01-nft-invalid-rules
+05-create-per-nic-chains
+* create an empty chain for each detected nic
 
-  10-nft-default-policy is loaded
-    * log traffic that made it so far
-    * apply a deny verdict
+10-nft-default-policy is loaded
+* log traffic that made it so far
+* apply a deny verdict
 
 # Getting Started
 
