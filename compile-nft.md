@@ -8,7 +8,7 @@ s dnf install bison-devel flex-devel libmnl-devel libnftnl-devel readline-devel 
 
 ## Alternatively you can build required librairies
 
-see http://wiki.nftables.org/wiki-nftables/index.php/Building_and_installing_nftables_from_sources
+see https://wiki.nftables.org/wiki-nftables/index.php/Building_and_installing_nftables_from_sources
 
 # Prepare
 

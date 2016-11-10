@@ -96,7 +96,7 @@ from where you cloned this repository
 
 ## nftables
 
-<http://wiki.nftables.org/wiki-nftables/index.php/Main_Page>
+<https://wiki.nftables.org/wiki-nftables/index.php/Main_Page>
 <https://home.regit.org/netfilter-en/nftables-quick-howto/>
 <https://wiki.archlinux.org/index.php/nftables>
 <https://wiki.gentoo.org/wiki/Nftables>
